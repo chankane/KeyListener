@@ -1,234 +1,69 @@
-class Mino {
-  constructor(pattern, color) {
-    this.colors = new Array(pattern.length);
-    for (let j = 0; j < pattern.length; j++) {
-      this.colors[j] = new Array(pattern.length);
-      for (let i = 0; i < pattern.length; i++) {
-        if(pattern[j][i]) {
-          this.colors[j][i] = color;
-        } else {
-          this.colors[j][i] = Color.EMPTY;
-        }
-      }
-    }
-  }
-
-  getColors() {
-    return this.colors;
-  }
-
-  rotateR() {
-    this._transpose();
-    for (let j = 0; j < this.colors.length; j++) {
-      for (let i = 0; i < this.colors.length / 2; i++) {
-        let tmp = this.colors[j][i];
-        this.colors[j][i] = this.colors[j][this.colors.length - i - 1];
-        this.colors[j][this.colors.length - i - 1] = tmp;
-      }
-    }
-  }
-
-  rotateL() {
-    this._transpose();
-    for (let i = 0; i < this.colors.length / 2; i++) {
-      let tmp = this.colors[i];
-      this.colors[i] = this.colors[this.colors.length - i - 1];
-      this.colors[this.colors.length - i - 1] = tmp;
-    }
-  }
-
-  _transpose() {
-    for (let j = 0; j < this.colors.length; j++) {
-      for (let i = 0; i < j; i++) {
-        let tmp = this.colors[j][i];
-        this.colors[j][i] = this.colors[i][j];
-        this.colors[i][j] = tmp;
-      }
-    }
-  }
-}
-const Color = {
-  EMPTY: 'lightgray',
-  I: 'cyan',
-  O: 'yellow',
-  S: 'lime',
-  Z: 'red',
-  J: 'blue',
-  L: 'orange',
-  T: 'magenta',
-}
-class I extends Mino {
-  constructor() {
-    let pattern = [
-      [0, 0, 0, 0],
-      [1, 1, 1, 1],
-      [0, 0, 0, 0],
-      [0, 0, 0, 0]
-    ];
-    super(pattern, Color.I);
-  }
-}
-class J extends Mino {
-  constructor() {
-    let pattern = [
-      [1, 0, 0],
-      [1, 1, 1],
-      [0, 0, 0],
-    ];
-    super(pattern, Color.J);
-  }
-}
-class L extends Mino {
-  constructor() {
-    let pattern = [
-      [0, 0, 1],
-      [1, 1, 1],
-      [0, 0, 0],
-    ];
-    super(pattern, Color.L);
-  }
-}
-class O extends Mino {
-  constructor() {
-    let pattern = [
-      [1, 1],
-      [1, 1],
-    ];
-    super(pattern, Color.O);
-  }
-}
-class S extends Mino {
-  constructor() {
-    let pattern = [
-      [0, 1, 1],
-      [1, 1, 0],
-      [0, 0, 0],
-    ];
-    super(pattern, Color.S);
-  }
-}
-class T extends Mino {
-  constructor() {
-    let pattern = [
-      [0, 1, 0],
-      [1, 1, 1],
-      [0, 0, 0],
-    ];
-    super(pattern, Color.T);
-  }
-}
-class Z extends Mino {
-  constructor() {
-    let pattern = [
-      [1, 1, 0],
-      [0, 1, 1],
-      [0, 0, 0],
-    ];
-    super(pattern, Color.Z);
-  }
-}
-const BlockSize = {
-  LARGE: 20,
-  MEDIUM: 20,
-  SMALL: 20
-}
-class Board {
-  constructor(canvas, blockSize) {
-	  canvas.width = blockSize * Board._WIDTH;
-    canvas.height = blockSize * Board._HEIGHT;
-    canvas.style.backgroundColor = 'gray';
-    this.blockSize = blockSize;
-    this.context = canvas.getContext('2d');
-    this.mino = null;
-  }
-
-  getMino() {
-    return this.mino;
-  }
-
-  setMino(mino) {
-    this.mino = mino;
-  }
-
-  repaint() {
-    if (this.mino === null) {
-      return;
-    }
-
-    this.context.clearRect(0, 0, this.blockSize * Board._WIDTH, this.blockSize * Board._HEIGHT);
-
-    let colors = this.mino.getColors();
-    for (let j=0; j<colors.length; j++) {
-      for (let i=0; i<colors[j].length; i++) {
-        this.context.fillStyle = colors[j][i];
-        this.context.fillRect(this.blockSize * i, this.blockSize * j, this.blockSize - 2, this.blockSize - 2);
-      }
-    }
-  }
-}
-
-Board._WIDTH = 5;
-Board._HEIGHT = 4;
-let keyBuf = new Array();
-
-let board;
-
 onload = () => {
-	let canvas = document.getElementById("holdCanvas");
-	let holdBoard = new Board(canvas, BlockSize.MEDIUM);
-
-	canvas = document.getElementById("nextCanvas");
-	let nextBoard = new NextBoard(canvas, BlockSize.MEDIUM);
-	
-	canvas = document.getElementById("mainCanvas");
-	board = new MainBoard(canvas, BlockSize.MEDIUM, holdBoard, nextBoard);
-	
-	holdBoard.repaint();
-	board.repaint();
-	nextBoard.repaint();
-
-	canvas = document.getElementById("t");
-	let context = canvas.getContext('2d');
-	context.fillRect(-50, -50, 100, 100);
+	let text = document.getElementById("text");
+	let test = new Test(text);
+	let input = new Input(document, test);
 };
+class Input {
+  constructor(document, listener) {
+    this.listener = listener;
+    document.onkeydown = (e) => {
+      console.log(e.keyCode);
+      switch (e.keyCode) {
+      case KeyEvent.DOM_VK_LEFT:
+        listener.onMoveLeft();
+        break;
+      case KeyEvent.DOM_VK_RIGHT:
+        listener.onMoveRight();
+        break;
+      case KeyEvent.DOM_VK_DOWN:
+        listener.onSoftDrop();
+        break;
+      case KeyEvent.DOM_VK_UP:
+        listener.onHardDrop();
+        break;
+      case KeyEvent.DOM_VK_Z:
+        listener.onRotateLeft();
+        break;
+      case KeyEvent.DOM_VK_X:
+        listener.onRotateRight();
+        break;
+      case KeyEvent.DOM_VK_SPACE:
+        listener.onHold();
+        break;
+      }
+    };
+    document.onkeyup = (e) => {};
+  }
+}
+class KeyListener {
+  onMoveLeft() {
+    throw new Error('Override onMoveLeft()');
+  }
 
-document.onkeydown = (e) => {
-	keyBuf[e.keyCode] = true;
-	switch (e.keyCode) {
-	case KeyEvent.DOM_VK_Z:
-		board.rotateLeft();
-		board.repaint();
-		break;
-	case KeyEvent.DOM_VK_X:
-		board.rotateRight();
-		board.repaint();
-		break;
-	case KeyEvent.DOM_VK_SPACE:
-		board.hold();
-		board.repaint();
-		break;
-	case KeyEvent.DOM_VK_UP:
-		board.hardDrop();
-		board.repaint();
-		break;
-	case KeyEvent.DOM_VK_DOWN:
-		board.softDrop();
-		board.repaint();
-		break;
-	case KeyEvent.DOM_VK_LEFT:
-		board.moveLeft();
-		board.repaint();
-		break;
-	case KeyEvent.DOM_VK_RIGHT:
-		board.moveRight();
-		board.repaint();
-		break;
-	}
-};
+  onMoveRight() {
+    throw new Error('Override onMoveRight()');
+  }
+  
+  onSoftDrop() {
+    throw new Error('Override onSoftDrop()');
+  }
 
-document.onkeyup = (e) => {
-	keyBuf[e.keyCode] = false;
-};
+  onHardDrop() {
+    throw new Error('Override onHardDrop()');
+  }
+
+  onRotateLeft() {
+    throw new Error('Override onRotateLeft()');
+  }
+
+  onRotateRight() {
+    throw new Error('Override onRotateRight()');
+  }
+
+  onHold() {
+    throw new Error('Override onHold()');
+  }
+}
 if (typeof KeyEvent === "undefined") { 
   var KeyEvent = { 
    DOM_VK_CANCEL: 3, 
@@ -348,176 +183,48 @@ if (typeof KeyEvent === "undefined") {
    DOM_VK_META: 224 
   }; 
 } 
-class MainBoard extends Board {
-
-  _initColors() {
-    this.colors = new Array(MainBoard._HEIGHT + MainBoard._HIDE_HEIGHT);
-    for (let j = 0; j < MainBoard._HEIGHT + MainBoard._HIDE_HEIGHT; j++) {
-      this.colors[j] = new Array(MainBoard._WIDTH).fill(Color.EMPTY);
-    }
+class Test extends KeyListener {
+  constructor(text) {
+    super();
+    this._text = text;
   }
 
-  constructor(canvas, blockSize, holdBoard, nextBoard) {
-    super(canvas, blockSize);
-    canvas.width = blockSize * MainBoard._WIDTH;
-    canvas.height = blockSize * (MainBoard._HEIGHT + 0.25);
-    this.minoX = this.minoY = 0;
-    this.colors = null;
-    this._initColors();
-    this.holdBoard = holdBoard;
-    this.nextBoard = nextBoard;
-    this.setMino(nextBoard.getMino());
-    this.startDropping();
+  onMoveLeft() {
+    this._setText('<');
   }
 
-  startDropping() {
-    setInterval(() => {
-      this.minoY++;
-      if (this._isIllegalPosition()) {
-        this.minoY--;
-        this._next();
-      }
-      this.repaint();
-    }, 1000);
+  onMoveRight() {
+    this._setText('>');
+  }
+  
+  onSoftDrop() {
+    this._setText('v');
   }
 
-  hardDrop() {
-    //?
+  onHardDrop() {
+    this._setText('^');
   }
 
-  softDrop() {
-    this.minoY++;
-    if (this._isIllegalPosition()) {
-      this.minoY--;
-      this._next();
-    }
+  onRotateLeft() {
+    this._setText('<<');
   }
 
-  moveLeft() {
-    this.minoX--;
-    if (this._isIllegalPosition()) {
-      this.minoX++;
-    }
+  onRotateRight() {
+    this._setText('>>');
   }
 
-  moveRight() {
-    this.minoX++;
-    if (this._isIllegalPosition()) {
-      this.minoX--;
-    }
+  onHold() {
+    this._setText('O');
   }
 
-  rotateLeft() {
-    this.mino.rotateL();
-  }
-
-  rotateRight() {
-    this.mino.rotateR();
-  }
-
-  hold() {
-    //?
-  }
-
-  _next() {
-    this._fixMino();
-    this.minoY = 0;
-    this.mino = this.nextBoard.getMino();
-  }
-
-  _fixMino() {
-    let colors = this.mino.getColors();
-    for (let j=0; j<colors.length; j++) {
-      for (let i=0; i<colors[j].length; i++) {
-        if (colors[j][i] !== Color.EMPTY) {
-          this.colors[j + this.minoY][i + this.minoX] = colors[j][i];
-        }
-      }
-    }
-  }
-
-  _isIllegalPosition() {
-    let colors = this.mino.getColors();
-    for (let j=0; j<colors.length; j++) {
-      for (let i=0; i<colors[j].length; i++) {
-        if (colors[j][i] !== Color.EMPTY
-            && (this.minoX + i < 0 || this.minoX + i >= MainBoard._WIDTH || this.minoY + j >= MainBoard._HEIGHT + MainBoard._HIDE_HEIGHT
-            || this.colors[this.minoY + j][this.minoX + i] !== Color.EMPTY)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  repaint() {
-    this.context.clearRect(0, 0, this.blockSize * Board._WIDTH, this.blockSize * (Board._HEIGHT - MainBoard._HIDE_HEIGHT + 0.25));
-    for (let j=0; j<this.colors.length; j++) {
-      for (let i=0; i<this.colors[j].length; i++) {
-        this.context.fillStyle = this.colors[j][i];
-        this.context.fillRect(this.blockSize * i, this.blockSize * (j - MainBoard._HIDE_HEIGHT + 0.25),
-            this.blockSize - 2, this.blockSize - 2);
-      }
-    }
-
-    if (this.mino === null) {
-      return;
-    }
-    let colors = this.mino.getColors();
-    for (let j=0; j<colors.length; j++) {
-      for (let i=0; i<colors.length; i++) {
-        if (colors[j][i] == Color.EMPTY) {
-          continue;
-        }
-        this.context.fillStyle = colors[j][i];
-        this.context.fillRect(this.blockSize * (this.minoX + i), this.blockSize * (this.minoY + j - MainBoard._HIDE_HEIGHT + 0.25),
-            this.blockSize - 2, this.blockSize - 2);
-      }
-    }
+  _setText(str) {
+    this._text.innerText = str;
   }
 }
-
-MainBoard._WIDTH = 10;
-MainBoard._HEIGHT = 20;
-MainBoard._HIDE_HEIGHT = 4;
-class MinoFactory {
-  static create() {
-    let mino;
-    switch(Math.floor(Math.random() * 7)) {
-    case 0:
-      mino = new I();
-      break;
-    case 1:
-      mino = new O();
-      break;
-    case 2:
-      mino = new S();
-      break;
-    case 3:
-      mino = new Z();
-      break;
-    case 4:
-      mino = new J();
-      break;
-    case 5:
-      mino = new L();
-      break;
-    case 6:
-      mino = new T();
-      break;
-    }
-    return mino;
-  }
-}
-class NextBoard extends Board {
-  constructor(canvas, blockSize) {
-    super(canvas, blockSize);
-    this.mino = MinoFactory.create();
-  }
-
-  getMino() {
-    let mino = this.mino;
-    this.mino = MinoFactory.create();
-    return mino;
+class Tetris {
+  constructor(holdBoard, mainBoard, nextBoard) {
+    this._holdBoard = holdBoard;
+    this._mainBoard = mainBoard;
+    this._nextBoard = nextBoard;
   }
 }
