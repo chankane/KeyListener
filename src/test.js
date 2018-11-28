@@ -33,6 +33,7 @@ class Test extends KeyListener {
   }
 
   _setText(str) {
+    console.log(str);
     this._text.innerText = str;
   }
 }
