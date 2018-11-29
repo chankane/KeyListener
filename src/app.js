@@ -1,55 +1,60 @@
-const http = require("http");
-const fs = require("fs");
+const PORT = '4649';
+const io = initSocketIo();
 
-let id = 1;
-class Main {
-  constructor() {
-    const server = http.createServer((request, response) => {
-      this.requestHandler(request, response);
-    });
-    server.listen('4649');
-    this._io = require('socket.io').listen(server);
-    console.log('listening');
-    this._garbageRow = [0, 0];//[0, 0, 0, 0];
-    this.ioHandler();
-  }
+let garbages = [0, 0];//[0, 0, 0, 0];
 
-  ioHandler() {
-    this._io.sockets.on('connection', (socket) => {
-      socket.on('connected', (data) => {
-        this._io.to(socket.id).emit('connected', id++);
-      });
-      //this._io.to(socket.id).emit('connection', id++);
-      // server -> client (自分以外の全員宛に送る)
-      socket.on('attack', (data) => {
-        for (let i in data.rowsNum) {
-          if (0 < this._garbageRow[data.playerId - 1]) {console.log(this._garbageRow[data.playerId - 1]);
-            this._garbageRow[data.playerId - 1]--;
-          } else {
-            for (let j in this._garbageRow) {
-              if (j !== data.playerId - 1) {
-                this._garbageRow[j]++;
-              }
-            }
-          }
-        }
-        this._io.sockets.emit('attack', this._garbageRow);
-        console.log(this._garbageRow);
-      });
-    });
-  }
+let playerIds = [];
 
-  requestHandler(request, response) {
-    console.log(request.url);
-    if (request.url === '/') {
-      request.url = '/index.html';
-      response.writeHead(200, { 'Content-Type': 'text/html' });
-    } else if (request.url === '/index.css') {
-      response.writeHead(200, { 'Content-Type': 'text/css' });
+io.sockets.on('connection', (socket) => {
+  playerIds.push(socket.id);
+  io.sockets.emit('playerChanged', playerIds);
+
+  socket.on("disconnect", () => {
+    // delete player
+    playerIds = playerIds.filter((e) => e !== socket.id);
+    io.sockets.emit('playerChanged', playerIds);
+  });
+
+  // everyone
+  socket.on('attack', (rowsCount) => {
+    attack(socketIdToPlayerId(socket.id), rowsCount);
+    io.sockets.emit('garbageChanged', garbages);
+    console.log(garbages);
+  });
+});
+
+function initSocketIo() {
+  const server = require("http").createServer((request, response) => {
+    requestHandler(request, response);
+  }).listen(PORT);
+  console.log('listening');
+  return require('socket.io').listen(server);
+}
+
+function attack(playerId, rowsCount) {
+  for ( ; 0 < rowsCount; rowsCount--) {
+    if (0 === garbages[playerId - 1]) {
+      for (let i in garbages) {console.log(garbages[playerId - 1]);
+        garbages[i]++;
+      }
     }
-    fs.readFile('.' + request.url, 'utf-8', (err, data) => {
-      response.end(data);
-    });
+    garbages[playerId - 1]--;
   }
 }
-const main = new Main();
+
+function socketIdToPlayerId(socketId) {
+  return playerId.indexOf(socketId);
+}
+
+function requestHandler(request, response) {
+  console.log(request.url);
+  if (request.url === '/') {
+    request.url = '/index.html';
+    response.writeHead(200, { 'Content-Type': 'text/html' });
+  } else if (request.url === '/index.css') {
+    response.writeHead(200, { 'Content-Type': 'text/css' });
+  }
+  require("fs").readFile('.' + request.url, 'utf-8', (err, data) => {
+    response.end(data);
+  });
+}
