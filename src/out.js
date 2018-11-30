@@ -5,32 +5,38 @@ let playerId;
 let garbages = [];
 let playerNames = [];
 
-socket.on("playersChanged", (names) => {
+socket.on("updated", (players) => {
+	console.log(players);
+	playersUpdated(players);
+	garbagesUpdated(players);
+});
+
+function playersUpdated(players) {
 	// Clear
 	for (let i=0; i<4; i++) {
 		document.getElementById("name" + (i + 1)).innerText = '';
 	}
 	// Set
-	for (let i in names) {
+	for (let i in players) {
 		// Be careful. (i+1) is 01, 02, 03 or 04...
-		document.getElementById("name" + (+i + 1)).innerText = names[i];
+		document.getElementById("name" + (+i + 1)).innerText = players[i].name;
 	}
-});
+}
 
-socket.on("waitingFinished", (playerId) => {
-	playerId = playerId;
-});
-
-socket.on("garbagesChanged", (garbages) => {
-	console.log('changed');
+function garbagesUpdated(players) {
 	// Clear
 	for (let i=0; i<4; i++) {
 		document.getElementById("garbage" + (i + 1)).innerText = '';
 	}
 	// Set
-	for (i in garbages) {
-		document.getElementById("garbage" + (+i + 1)).innerText = garbages[i];
+	for (let i in players) {
+		// Be careful. (i+1) is 01, 02, 03 or 04...
+		document.getElementById("garbage" + (+i + 1)).innerText = players[i].garbage;
 	}
+}
+
+socket.on("waitingFinished", (playerId) => {
+	playerId = playerId;
 });
 
 onload = () => {
