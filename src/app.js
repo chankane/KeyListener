@@ -1,26 +1,29 @@
 const PORT = '4649';
 const io = initSocketIo();
 
-let garbages = [0, 0];//[0, 0, 0, 0];
-
 let playerIds = [];
+let garbages = [];
 
 io.sockets.on('connection', (socket) => {
   playerIds.push(socket.id);
-  io.sockets.emit('playerChanged', playerIds);
+  garbages.push(0);
+  io.sockets.emit('playersChanged', playerIds);
+  io.sockets.emit('garbagesChanged', garbages);
   console.log(playerIds);
 
   socket.on("disconnect", () => {
-    // delete player
+    // Delete player
     playerIds = playerIds.filter((e) => e !== socket.id);
-    io.sockets.emit('playerChanged', playerIds);
+    garbages.splice(socketIdToPlayerId(socket.id) - 1, 1);
+    io.sockets.emit('playersChanged', playerIds);
+    io.sockets.emit('garbagesChanged', garbages);
     console.log(playerIds);
   });
 
-  // everyone
+  // To everyone
   socket.on('attack', (rowsCount) => {
     attack(socketIdToPlayerId(socket.id), rowsCount);
-    io.sockets.emit('garbageChanged', garbages);
+    io.sockets.emit('garbagesChanged', garbages);
     console.log(garbages);
   });
 });
@@ -45,7 +48,7 @@ function attack(playerId, rowsCount) {
 }
 
 function socketIdToPlayerId(socketId) {
-  return playerIds.indexOf(socketId);
+  return playerIds.indexOf(socketId) + 1;
 }
 
 function requestHandler(request, response) {

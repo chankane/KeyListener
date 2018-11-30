@@ -5,7 +5,7 @@ let playerId;
 let garbages = [];
 let playerNames = [];
 
-socket.on("playerChanged", (names) => {
+socket.on("playersChanged", (names) => {
 	// Clear
 	for (let i=0; i<4; i++) {
 		document.getElementById("name" + (i + 1)).innerText = '';
@@ -23,8 +23,13 @@ socket.on("waitingFinished", (playerId) => {
 
 socket.on("garbagesChanged", (garbages) => {
 	console.log('changed');
+	// Clear
+	for (let i=0; i<4; i++) {
+		document.getElementById("garbage" + (i + 1)).innerText = '';
+	}
+	// Set
 	for (i in garbages) {
-		document.getElementById("garbages" + i).innerText = garbages[i];
+		document.getElementById("garbage" + (+i + 1)).innerText = garbages[i];
 	}
 });
 
