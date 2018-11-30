@@ -8,11 +8,13 @@ let playerIds = [];
 io.sockets.on('connection', (socket) => {
   playerIds.push(socket.id);
   io.sockets.emit('playerChanged', playerIds);
+  console.log(playerIds);
 
   socket.on("disconnect", () => {
     // delete player
     playerIds = playerIds.filter((e) => e !== socket.id);
     io.sockets.emit('playerChanged', playerIds);
+    console.log(playerIds);
   });
 
   // everyone
@@ -43,11 +45,11 @@ function attack(playerId, rowsCount) {
 }
 
 function socketIdToPlayerId(socketId) {
-  return playerId.indexOf(socketId);
+  return playerIds.indexOf(socketId);
 }
 
 function requestHandler(request, response) {
-  console.log(request.url);
+  //console.log(request.url);
   if (request.url === '/') {
     request.url = '/index.html';
     response.writeHead(200, { 'Content-Type': 'text/html' });

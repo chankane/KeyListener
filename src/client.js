@@ -6,10 +6,14 @@ let garbages = [];
 let playerNames = [];
 
 socket.on("playerChanged", (names) => {
+	// Clear
+	for (let i=0; i<4; i++) {
+		document.getElementById("name" + (i + 1)).innerText = '';
+	}
+	// Set
 	for (let i in names) {
-		let index = ++i;
-		console.log("name" + index);
-		document.getElementById("name" + index).innerText = names[index];
+		// Be careful. (i+1) is 01, 02, 03 or 04...
+		document.getElementById("name" + (+i + 1)).innerText = names[i];
 	}
 });
 
