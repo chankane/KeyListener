@@ -2,8 +2,6 @@ let url = 'http://10.125.98.153:4649';
 let socket = io.connect(url);
 
 let playerId;
-let garbages = [];
-let playerNames = [];
 
 socket.on("updated", (players) => {
 	console.log(players);
