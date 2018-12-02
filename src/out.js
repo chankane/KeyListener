@@ -1,52 +1,3 @@
-let url = 'http://10.125.98.153:4649';
-let socket = io.connect(url);
-
-let playerId;
-
-socket.on("updated", (players) => {
-	console.log(players);
-	playersUpdated(players);
-	garbagesUpdated(players);
-});
-
-function playersUpdated(players) {
-	// Clear
-	for (let i=0; i<4; i++) {
-		document.getElementById("name" + (i + 1)).innerText = '';
-	}
-	// Set
-	for (let i in players) {
-		// Be careful. (i+1) is 01, 02, 03 or 04...
-		document.getElementById("name" + (+i + 1)).innerText = players[i].name;
-	}
-}
-
-function garbagesUpdated(players) {
-	// Clear
-	for (let i=0; i<4; i++) {
-		document.getElementById("garbage" + (i + 1)).innerText = '';
-	}
-	// Set
-	for (let i in players) {
-		// Be careful. (i+1) is 01, 02, 03 or 04...
-		document.getElementById("garbage" + (+i + 1)).innerText = players[i].garbage;
-	}
-}
-
-socket.on("waitingFinished", (playerId) => {
-	playerId = playerId;
-});
-
-onload = () => {
-	//let text = document.getElementById("text");
-	//let test = new Test(text);
-	//let input = new Input(document, test);
-};
-
-document.onkeydown = (e) => {
-	if(e.key===' ')
-	socket.emit("attack", 5);
-};
 class Input {
   static initPressedTime() {
     let pressedTime = [];
@@ -60,8 +11,7 @@ class Input {
     return pressedTime;
   }
 
-  constructor(document, listener) {
-    this._listener = listener;
+  constructor(document) {
     this._pressedTime = Input.initPressedTime();
     this._isPressed = [];
     document.onkeydown = (e) => {
@@ -73,6 +23,20 @@ class Input {
       this._callBack();
     }, 1000 / Input._FPS);
   }
+
+  onMoveLeft() {}
+  
+  onMoveRight() {}
+
+  onSoftDrop() {}
+
+  onHardDrop() {}
+
+  onRotateLeft() {}
+
+  onRotateRight() {}
+
+  onHold() {}
 
   _updatePressedTime() {
     for (let key in this._isPressed) {
@@ -86,19 +50,19 @@ class Input {
 
   _callBack() {
     if (1 === this._pressedTime[Input._MOVE_LEFT] || Input._WAIT_FRAME + 1 < this._pressedTime[Input._MOVE_LEFT]) {
-      this._listener.onMoveLeft();
+      this.onMoveLeft();
     } else if (1 === this._pressedTime[Input._MOVE_RIGHT] || Input._WAIT_FRAME + 1 < this._pressedTime[Input._MOVE_RIGHT]) {
-      this._listener.onMoveRight();
+      this.onMoveRight();
     } else if (this._pressedTime[Input._SOFT_DROP]) {
-      this._listener.onSoftDrop();
+      this.onSoftDrop();
     } else if (1 === this._pressedTime[Input._HARD_DROP]) {
-      this._listener.onHardDrop();
+      this.onHardDrop();
     } else if (1 === this._pressedTime[Input._ROTATE_LEFT]) {
-      this._listener.onRotateLeft();
+      this.onRotateLeft();
     } else if (1 === this._pressedTime[Input._ROTATE_RIGHT]) {
-      this._listener.onRotateRight();
+      this.onRotateRight();
     } else if (1 === this._pressedTime[Input._HOLD]) {
-      this._listener.onHold();
+      this.onHold(); console.log('hold!!');
     }
   }
 }
@@ -112,6 +76,55 @@ Input._HARD_DROP = 'ArrowUp';
 Input._ROTATE_LEFT = 'z';
 Input._ROTATE_RIGHT = 'x';
 Input._HOLD = ' ';
+//let url = 'http://10.125.98.153:4649';
+let url = 'http://localhost:4649';
+let socket = io.connect(url, { query: location.search.slice(1) });
+
+/*let holdBoardList = [];
+let mainBoardList = [];
+let nextBoardList = [];*/
+
+let input = new Input(document);
+input.onMoveLeft = () => socket.emit('moveLeft');
+input.onMoveRight = () => socket.emit('moveRight');
+input.onSoftDrop = () => socket.emit('softDrop');
+input.onHardDrop = () => socket.emit('hardDrop');
+input.onRotateLeft = () => socket.emit('rotateLeft');
+input.onRotateRight = () => socket.emit('rotateRight');
+input.onHold = () => socket.emit('hold');
+
+socket.on("updated", (players) => {
+	console.log(players);
+	console.log(location.search);
+	clear();
+	repaint(players);
+});
+
+function clear() {
+	for (let i=0; i<4; i++) {
+		document.getElementById("name" + (i + 1)).innerText = '';
+		document.getElementById("garbage" + (i + 1)).innerText = '';
+	}
+}
+
+function repaint(players) {
+	// Be careful. (i+1) is 01, 02, 03 or 04...
+	for (let i in players) {
+		document.getElementById("name" + (+i + 1)).innerText = players[i].name;
+		document.getElementById("garbage" + (+i + 1)).innerText = players[i].garbage;
+	}
+}
+
+onload = () => {
+	/*for ( let i=0; i<4; i++) {
+		holdBoardList.push(new MiniBoard(document.getElementById('holdCanvas' + i)));
+		mainBoardList.push(new MainBoard(document.getElementById('mainCanvas' + i)));
+		nextBoardList.push(new MiniBoard(document.getElementById('nextCanvas' + i)));
+	}*/
+	
+	//let test = new Test(text);
+	//let input = new Input(document, test);
+};
 class KeyListener {
   onMoveLeft() {
     throw new Error('Override onMoveLeft()');

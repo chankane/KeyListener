@@ -11,8 +11,7 @@ class Input {
     return pressedTime;
   }
 
-  constructor(document, listener) {
-    this._listener = listener;
+  constructor(document) {
     this._pressedTime = Input.initPressedTime();
     this._isPressed = [];
     document.onkeydown = (e) => {
@@ -24,6 +23,20 @@ class Input {
       this._callBack();
     }, 1000 / Input._FPS);
   }
+
+  onMoveLeft() {}
+  
+  onMoveRight() {}
+
+  onSoftDrop() {}
+
+  onHardDrop() {}
+
+  onRotateLeft() {}
+
+  onRotateRight() {}
+
+  onHold() {}
 
   _updatePressedTime() {
     for (let key in this._isPressed) {
@@ -37,19 +50,19 @@ class Input {
 
   _callBack() {
     if (1 === this._pressedTime[Input._MOVE_LEFT] || Input._WAIT_FRAME + 1 < this._pressedTime[Input._MOVE_LEFT]) {
-      this._listener.onMoveLeft();
+      this.onMoveLeft();
     } else if (1 === this._pressedTime[Input._MOVE_RIGHT] || Input._WAIT_FRAME + 1 < this._pressedTime[Input._MOVE_RIGHT]) {
-      this._listener.onMoveRight();
+      this.onMoveRight();
     } else if (this._pressedTime[Input._SOFT_DROP]) {
-      this._listener.onSoftDrop();
+      this.onSoftDrop();
     } else if (1 === this._pressedTime[Input._HARD_DROP]) {
-      this._listener.onHardDrop();
+      this.onHardDrop();
     } else if (1 === this._pressedTime[Input._ROTATE_LEFT]) {
-      this._listener.onRotateLeft();
+      this.onRotateLeft();
     } else if (1 === this._pressedTime[Input._ROTATE_RIGHT]) {
-      this._listener.onRotateRight();
+      this.onRotateRight();
     } else if (1 === this._pressedTime[Input._HOLD]) {
-      this._listener.onHold();
+      this.onHold(); console.log('hold!!');
     }
   }
 }

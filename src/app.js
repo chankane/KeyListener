@@ -2,32 +2,48 @@ const PORT = '4649';
 const io = generateSocketIo();
 
 let players = [];
-let names = [];
 
-function findIndexBySocketId(socketId) {
-  return players.findIndex(e => e.id === socketId);
+function convert(players) {
+  let tmp = [];
+  for (let key in players) {
+    tmp.push(players[key]);
+  }
+  return tmp;
 }
 
 function update() {
-  io.sockets.emit('updated', players);
+  io.sockets.emit('updated', convert(players));
 }
 
 io.sockets.on('connection', (socket) => {
-  players.push({ id: socket.id, name: names.shift(), garbage: 0 });
+  players[socket.id] = { name: socket.handshake.query['name'], garbage: 0 };
   update();
 
   socket.on("disconnect", () => {
-    // Delete player
-    players = players.filter(e => e.id !== socket.id);
+    delete players[socket.id];
     update();
   });
 
-  // To everyone
-  socket.on('attack', (rowsCount) => {
-    attack(findIndexBySocketId(socket.id), rowsCount);
-    update();
-  });
+  socket.on("moveLeft", () => {});
+  socket.on("moveRight", () => {});
+  socket.on("softDrop", () => {});
+  socket.on("hardDrop", () => {});
+  socket.on("rotateLeft", () => {});
+  socket.on("rotateRight", () => {});
+  socket.on("hold", () => {attack(socket.id, 1); update();});
 });
+
+function attack(socketId, rowsCount) {
+  for ( ; 0 < rowsCount; rowsCount--) {
+    if (0 === players[socketId].garbage) {
+      //players = players.map(e => { e.id, e.name, e.garbage + 1 });
+      for (let key in players) {
+        players[key].garbage++;
+      }
+    }
+    players[socketId].garbage--;
+  }
+}
 
 function generateSocketIo() {
   const server = require("http").createServer((request, response) => {
@@ -35,18 +51,6 @@ function generateSocketIo() {
   }).listen(PORT);
   console.log('listening');
   return require('socket.io').listen(server);
-}
-
-function attack(indexOfPlayers, rowsCount) {
-  for ( ; 0 < rowsCount; rowsCount--) {
-    if (0 === players[indexOfPlayers].garbage) {
-      //players = players.map(e => { e.id, e.name, e.garbage + 1 });
-      for (let i in players) {
-        players[i].garbage++;
-      }
-    }
-    players[indexOfPlayers].garbage--;
-  }
 }
 
 function requestHandler(request, response) {
@@ -57,10 +61,6 @@ function requestHandler(request, response) {
   } else if (request.url === '/index.css') {
     response.writeHead(200, { 'Content-Type': 'text/css' });
   } else if (request.url.match('main')) {
-    let name = request.url.split('?')[1].split('=')[1];
-    //players.push({name: name});
-    names.push(name);
-    console.log('p = ' + names);
     request.url = request.url.split('?')[0];
   }
   require("fs").readFile('.' + request.url, 'utf-8', (err, data) => {
