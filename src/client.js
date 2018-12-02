@@ -17,7 +17,6 @@ input.onHold = () => socket.emit('hold');
 
 socket.on("updated", (players) => {
 	console.log(players);
-	console.log(location.search);
 	clear();
 	repaint(players);
 });
