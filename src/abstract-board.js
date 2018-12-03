@@ -1,35 +1,40 @@
 class AbstractBoard {
-  static _calcPixelWidth() {
-    throw new Error('Override _calcPixelWidth()');
-  }
-  
-  static _calcPixelHeight() {
-    throw new Error('Override _calcPixelHeight()');
+  constructor(canvas, blockNumX, blockNumY, blockSize) {
+    console.log(canvas);
+    canvas.style.backgroundColor = 'gray';
+    canvas.width = this._canvasWidth = blockNumX * blockSize;
+    canvas.height = this._canvasHeight = blockNumY * blockSize;
+    this._context = canvas.getContext('2d');
+    this._blockSize = blockSize;
+    this._offsetX = this._offsetY = 0;
+    this._strokeWidth = 1;
   }
 
-  constructor(canvas) {
-    canvas.style.backgroundColor = 'gray';
-    canvas.width = AbstractBoard._calcPixelWidth();
-    canvas.height = AbstractBoard._calcPixelHeight();
-    this._context = canvas.getContext('2d');
+  _setOffset(offsetX, offsetY) {
+    this._offsetX = offsetX;
+    this._offsetY = offsetY;
+  }
+
+  _setStrokeWidth(strokeWidth) {
+    this._strokeWidth = strokeWidth;
   }
 
   repaint(colors) {
     this._clearScreen();
     for (let j=0; j<colors.length; j++) {
       for (let i=0; i<colors[j].length; i++) {
-        this.context.fillStyle = colors[j][i];
-        this.context.fillRect(
-          MainBoard._BLOCK_SIZE * i,
-          MainBoard._BLOCK_SIZE * (j - MainBoard._HIDE_HEIGHT + 0.25),
-          MainBoard._BLOCK_SIZE - 2,
-          MainBoard._BLOCK_SIZE - 2
+        this._context.fillStyle = colors[j][i];
+        this._context.fillRect(
+          this._blockSize * (i + this._offsetX) + this._strokeWidth,
+          this._blockSize * (j + this._offsetY) + this._strokeWidth,
+          this._blockSize - this._strokeWidth * 2,
+          this._blockSize - this._strokeWidth * 2
         );
       }
     }
   }
 
   _clearScreen() {
-    this._context.clearRect(0, 0, AbstractBoard._calcPixelWidth(), AbstractBoard._calcPixelHeight());
+    this._context.clearRect(0, 0, this._canvasWidth, this._canvasHeight);
   }
 }

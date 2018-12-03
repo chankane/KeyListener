@@ -76,13 +76,53 @@ Input._HARD_DROP = 'ArrowUp';
 Input._ROTATE_LEFT = 'z';
 Input._ROTATE_RIGHT = 'x';
 Input._HOLD = ' ';
+class AbstractBoard {
+  constructor(canvas, blockNumX, blockNumY, blockSize) {
+    console.log(canvas);
+    canvas.style.backgroundColor = 'gray';
+    canvas.width = this._canvasWidth = blockNumX * blockSize;
+    canvas.height = this._canvasHeight = blockNumY * blockSize;
+    this._context = canvas.getContext('2d');
+    this._blockSize = blockSize;
+    this._offsetX = this._offsetY = 0;
+    this._strokeWidth = 1;
+  }
+
+  _setOffset(offsetX, offsetY) {
+    this._offsetX = offsetX;
+    this._offsetY = offsetY;
+  }
+
+  _setStrokeWidth(strokeWidth) {
+    this._strokeWidth = strokeWidth;
+  }
+
+  repaint(colors) {
+    this._clearScreen();
+    for (let j=0; j<colors.length; j++) {
+      for (let i=0; i<colors[j].length; i++) {
+        this._context.fillStyle = colors[j][i];
+        this._context.fillRect(
+          this._blockSize * (i + this._offsetX) + this._strokeWidth,
+          this._blockSize * (j + this._offsetY) + this._strokeWidth,
+          this._blockSize - this._strokeWidth * 2,
+          this._blockSize - this._strokeWidth * 2
+        );
+      }
+    }
+  }
+
+  _clearScreen() {
+    this._context.clearRect(0, 0, this._canvasWidth, this._canvasHeight);
+  }
+}
 //let url = 'http://10.125.98.153:4649';
 let url = 'http://localhost:4649';
 let socket = io.connect(url, { query: location.search.slice(1) });
 
-/*let holdBoardList = [];
+let holdBoardList = [];
 let mainBoardList = [];
-let nextBoardList = [];*/
+let nextBoardList = [];
 
 let input = new Input(document);
 input.onMoveLeft = () => socket.emit('moveLeft');
@@ -95,7 +135,6 @@ input.onHold = () => socket.emit('hold');
 
 socket.on("updated", (players) => {
 	console.log(players);
-	console.log(location.search);
 	clear();
 	repaint(players);
 });
@@ -108,91 +147,66 @@ function clear() {
 }
 
 function repaint(players) {
+	let arr = new Array(4);
+	arr[0] = new Array(4);
+	arr[1] = new Array(4);
+	arr[2] = new Array(4);
+	arr[3] = new Array(4);
 	// Be careful. (i+1) is 01, 02, 03 or 04...
 	for (let i in players) {
 		document.getElementById("name" + (+i + 1)).innerText = players[i].name;
 		document.getElementById("garbage" + (+i + 1)).innerText = players[i].garbage;
+		holdBoardList[i].repaint(arr);
+		mainBoardList[i].repaint(arr);
+		nextBoardList[i].repaint(arr);
 	}
 }
 
 onload = () => {
-	/*for ( let i=0; i<4; i++) {
-		holdBoardList.push(new MiniBoard(document.getElementById('holdCanvas' + i)));
-		mainBoardList.push(new MainBoard(document.getElementById('mainCanvas' + i)));
-		nextBoardList.push(new MiniBoard(document.getElementById('nextCanvas' + i)));
-	}*/
+	for ( let i=0; i<4; i++) {
+		holdBoardList.push(new MiniBoard(document.getElementById('holdCanvas' + (i+1))));
+		mainBoardList.push(new MainBoard(document.getElementById('mainCanvas' + (i+1))));
+		nextBoardList.push(new MiniBoard(document.getElementById('nextCanvas' + (i+1))));
+	}
 	
 	//let test = new Test(text);
 	//let input = new Input(document, test);
 };
-class KeyListener {
-  onMoveLeft() {
-    throw new Error('Override onMoveLeft()');
-  }
-
-  onMoveRight() {
-    throw new Error('Override onMoveRight()');
-  }
-  
-  onSoftDrop() {
-    throw new Error('Override onSoftDrop()');
-  }
-
-  onHardDrop() {
-    throw new Error('Override onHardDrop()');
-  }
-
-  onRotateLeft() {
-    throw new Error('Override onRotateLeft()');
-  }
-
-  onRotateRight() {
-    throw new Error('Override onRotateRight()');
-  }
-
-  onHold() {
-    throw new Error('Override onHold()');
+class MainBoard extends AbstractBoard {
+  constructor(canvas) {
+    super(canvas, MainBoard.WIDTH, MainBoard.HEIGHT, MainBoard._BLOCK_SIZE);
+    this._setOffset(0, -3.75);
+    this._setStrokeWidth(1);
   }
 }
-class Test extends KeyListener {
-  constructor(text) {
-    super();
-    this._text = text;
-  }
 
-  onMoveLeft() {
-    this._setText('<');
-  }
+MainBoard.WIDTH = 10;
+MainBoard.HEIGHT = 20.25;
+MainBoard._BLOCK_SIZE = 15;
 
-  onMoveRight() {
-    this._setText('>');
-  }
-  
-  onSoftDrop() {
-    this._setText('v');
-  }
-
-  onHardDrop() {
-    this._setText('^');
-  }
-
-  onRotateLeft() {
-    this._setText('<<');
-  }
-
-  onRotateRight() {
-    this._setText('>>');
-  }
-
-  onHold() {
-    this._setText('O');
-  }
-
-  _setText(str) {
-    console.log(str);
-    this._text.innerText = str;
+/*if (this.mino === null) {
+      return;
+    }
+    for (let j=0; j<this.mino.length; j++) {
+      for (let i=0; i<this.mino[j].length; i++) {
+        if (this.mino[j][i] == Color.EMPTY) {
+          continue;
+        }
+        this.context.fillStyle = this.mino[j][i];
+        this.context.fillRect(MainBoard._BLOCK_SIZE * (this.minoX + i), MainBoard._BLOCK_SIZE * (this.minoY + j - MainBoard._HIDE_HEIGHT + 0.25),
+        MainBoard._BLOCK_SIZE - 2, MainBoard._BLOCK_SIZE - 2);
+      }
+    }*/
+class MiniBoard extends AbstractBoard {
+  constructor(canvas) {
+    super(canvas, MiniBoard._WIDTH, MiniBoard._HEIGHT, MiniBoard._BLOCK_SIZE);
+    this._setStrokeWidth(1);
   }
 }
+
+MiniBoard._WIDTH = 5;
+MiniBoard._HEIGHT = 4;
+MiniBoard._BLOCK_SIZE = 15;
 class Tetris {
   constructor(holdBoard, mainBoard, nextBoard) {
     this._holdBoard = holdBoard;
