@@ -17,11 +17,16 @@ function update() {
 
 io.sockets.on('connection', (socket) => {
   players[socket.id] = { name: socket.handshake.query['name'], garbage: 0 };
+  console.log('player: ' + players[socket.id].name);
   update();
 
   socket.on("disconnect", () => {
     delete players[socket.id];
     update();
+  });
+
+  socket.on("startForcibly", () => {
+    // start
   });
 
   socket.on("moveLeft", () => {});

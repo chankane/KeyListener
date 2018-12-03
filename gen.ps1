@@ -1,0 +1,6 @@
+Get-ChildItem "./src/logic/mino/mino.js" | Get-Content | Set-Content "./out.js"
+Get-ChildItem "./src/logic/mino/*.js" -exclude "mino.js" | Get-Content | Add-Content "./out.js"
+Get-ChildItem "./src/logic/*.js" | Get-Content | Add-Content "./out.js"
+Get-ChildItem "./src/input/*.js" | Get-Content | Add-Content "./out.js"
+Get-ChildItem "./src/board/*.js" | Get-Content | Add-Content "./out.js"
+Get-ChildItem "./src/*.js" | Get-Content | Add-Content "./out.js"

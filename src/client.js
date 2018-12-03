@@ -21,6 +21,10 @@ socket.on("updated", (players) => {
 	repaint(players);
 });
 
+function startForcibly() {
+	socket.emit('startForcibly');
+}
+
 function clear() {
 	for (let i=0; i<4; i++) {
 		document.getElementById("name" + (i + 1)).innerText = '';
