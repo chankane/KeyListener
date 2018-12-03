@@ -16,7 +16,7 @@ function update() {
 }
 
 io.sockets.on('connection', (socket) => {
-  players[socket.id] = { name: socket.handshake.query['name'], garbage: 0 };
+  players[socket.id] = { name: socket.handshake.query['name'], damage: 0 };
   console.log('player: ' + players[socket.id].name);
   update();
 
@@ -40,13 +40,13 @@ io.sockets.on('connection', (socket) => {
 
 function attack(socketId, rowsCount) {
   for ( ; 0 < rowsCount; rowsCount--) {
-    if (0 === players[socketId].garbage) {
-      //players = players.map(e => { e.id, e.name, e.garbage + 1 });
+    if (0 === players[socketId].damage) {
+      //players = players.map(e => { e.id, e.name, e.damage + 1 });
       for (let key in players) {
-        players[key].garbage++;
+        players[key].damage++;
       }
     }
-    players[socketId].garbage--;
+    players[socketId].damage--;
   }
 }
 

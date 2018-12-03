@@ -6,7 +6,7 @@ class MainLogic {
     }
   }
 
-  constructor() {
+  constructor(holdLogic, nextLogic, onUpdated) {
     this._colors = null;
     this.offsetX = this.offsetY = 0;
     this._initColors();

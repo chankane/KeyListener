@@ -1,9 +1,21 @@
 class Tetris {
-  constructor(playerIdList, onUpdated) {
+  constructor(players, onUpdated) {
+    this._players = [];
     this._logics = [];
-    for (let playerId of playerIdList) {
-      this._logics[playerId] = new mainLogic(new holdLogic(), new NextLogic());
+    for (let key in players) {
+      this._logics[key] = new mainLogic(new holdLogic(), new NextLogic());
     }
+  }
+
+  update() {
+    for (key in this._players) {
+      
+    }
+  }
+
+  addPlayer(socketId, name) {
+    let 
+    this._players[socketId] = { name: name , damage: 0, holdBoardData};
   }
 
   onMoveLeft(socketId) {
