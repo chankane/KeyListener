@@ -78,7 +78,6 @@ Input._ROTATE_RIGHT = 'x';
 Input._HOLD = ' ';
 class AbstractBoard {
   constructor(canvas, blockNumX, blockNumY, blockSize) {
-    console.log(canvas);
     canvas.style.backgroundColor = 'gray';
     canvas.width = this._canvasWidth = blockNumX * blockSize;
     canvas.height = this._canvasHeight = blockNumY * blockSize;
@@ -175,7 +174,7 @@ socket.on("updated", (players) => {
 });
 
 function startForcibly() {
-	socket.emit('startForcibly');
+	socket.emit('start');
 }
 
 function clear() {

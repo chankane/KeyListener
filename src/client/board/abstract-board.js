@@ -1,6 +1,5 @@
 class AbstractBoard {
   constructor(canvas, blockNumX, blockNumY, blockSize) {
-    console.log(canvas);
     canvas.style.backgroundColor = 'gray';
     canvas.width = this._canvasWidth = blockNumX * blockSize;
     canvas.height = this._canvasHeight = blockNumY * blockSize;

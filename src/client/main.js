@@ -22,7 +22,7 @@ socket.on("updated", (players) => {
 });
 
 function startForcibly() {
-	socket.emit('startForcibly');
+	socket.emit('start');
 }
 
 function clear() {
