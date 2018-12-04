@@ -10,7 +10,7 @@ class MainLogic {
   constructor(holdLogic, nextLogic, callback) {
     this._holdLogic = holdLogic;
     this._nextLogic = nextLogic;
-    this._callback = callback;
+    this._callbacku = callback;
     this._backData = MainLogic._initBackData();
     this._mino = nextLogic.next();
     this._droppingIntervalId = 0;
@@ -27,13 +27,13 @@ class MainLogic {
   }
 
   _stop(){
-    clearInterval(tihs._droppingIntervalId);
+    clearInterval(this._droppingIntervalId);
   }
 
   /* Many logic...*/
   OnHardDrop() {
     //?
-    callback(this._mino.getData());
+    this._callbacku(this._mino.getData());
   }
 
   OnSoftDrop() {
@@ -42,7 +42,7 @@ class MainLogic {
       this._mino.moveUp();
       this._holdLogic.next();
     }
-    callback(this._mino.getData());
+    this._callbacku(this._mino.getData());
   }
 
   OnMoveLeft() {
@@ -50,7 +50,7 @@ class MainLogic {
     if (Srs._isIllegalPosition()) {
       this._mino.moveRight();
     }
-    callback(this._mino.getData());
+    this._callbacku(this._mino.getData());
   }
 
   OnMoveRight() {
@@ -58,18 +58,18 @@ class MainLogic {
     if (Srs._isIllegalPosition()) {
       this._mino.moveLeft();
     }
-    callback(this._mino.getData());
+    this._callbacku(this._mino.getData());
   }
 
   OnRotateLeft() {
     if (Srs.rotateLeft(this._backData, this._mino)) {
-      callback(this._mino.getData());
+      this._callbacku(this._mino.getData());
     }
   }
 
   onRotateRight() {
     if (Srs.rotateRight(this._backData, this._mino)) {
-      callback(this._mino.getData());
+      this._callbacku(this._mino.getData());
     }
   }
 
@@ -78,7 +78,7 @@ class MainLogic {
     if (null === this._mino) {
       this._mino = this._nextLogic.next();
     }
-    callback(this._mino.getData());
+    this._callbacku(this._mino.getData());
   }
 }
 

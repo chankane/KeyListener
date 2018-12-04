@@ -11,6 +11,7 @@ class Mino {
         }
       }
     };
+    return data;
   }
   constructor(pattern, color) {
     this._data = Mino._initData(pattern, color);

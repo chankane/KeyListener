@@ -36,6 +36,6 @@ class Player {
 
   setNextData(data) {
     this._nextData = data;
-    //this._callback();
+    this._callback();
   }
 }

@@ -96,11 +96,14 @@ class AbstractBoard {
     this._strokeWidth = strokeWidth;
   }
 
-  repaint(colors) {
+  repaint(data) {
     this._clearScreen();
-    for (let j=0; j<colors.length; j++) {
-      for (let i=0; i<colors[j].length; i++) {
-        this._context.fillStyle = colors[j][i];
+    if (!data) {
+      return;
+    }
+    for (let j=0; j<data.length; j++) {
+      for (let i=0; i<data[j].length; i++) {
+        this._context.fillStyle = data[j][i];
         this._context.fillRect(
           this._blockSize * (i + this._offsetX) + this._strokeWidth,
           this._blockSize * (j + this._offsetY) + this._strokeWidth,
@@ -185,18 +188,21 @@ function clear() {
 }
 
 function repaint(players) {
-	let arr = new Array(4);
+	/*let arr = new Array(4);
 	arr[0] = new Array(4);
 	arr[1] = new Array(4);
 	arr[2] = new Array(4);
-	arr[3] = new Array(4);
+	arr[3] = new Array(4);*/
 	// Be careful. (i+1) is 01, 02, 03 or 04...
 	for (let i in players) {
 		document.getElementById("name" + (+i + 1)).innerText = players[i].name;
 		document.getElementById("damage" + (+i + 1)).innerText = players[i].damage;
-		holdBoardList[i].repaint(arr);
-		mainBoardList[i].repaint(arr);
-		nextBoardList[i].repaint(arr);
+		// holdBoardList[i].repaint(arr);
+		// mainBoardList[i].repaint(arr);
+		// nextBoardList[i].repaint(arr);
+		holdBoardList[i].repaint(players[i].holdData);
+		mainBoardList[i].repaint(players[i].mainData);
+		nextBoardList[i].repaint(players[i].nextData);
 	}
 }
 

@@ -11,6 +11,7 @@ class Mino {
         }
       }
     };
+    return data;
   }
   constructor(pattern, color) {
     this._data = Mino._initData(pattern, color);
@@ -201,7 +202,7 @@ class MainLogic {
   constructor(holdLogic, nextLogic, callback) {
     this._holdLogic = holdLogic;
     this._nextLogic = nextLogic;
-    this._callback = callback;
+    this._callbacku = callback;
     this._backData = MainLogic._initBackData();
     this._mino = nextLogic.next();
     this._droppingIntervalId = 0;
@@ -218,13 +219,13 @@ class MainLogic {
   }
 
   _stop(){
-    clearInterval(tihs._droppingIntervalId);
+    clearInterval(this._droppingIntervalId);
   }
 
   /* Many logic...*/
   OnHardDrop() {
     //?
-    callback(this._mino.getData());
+    this._callbacku(this._mino.getData());
   }
 
   OnSoftDrop() {
@@ -233,7 +234,7 @@ class MainLogic {
       this._mino.moveUp();
       this._holdLogic.next();
     }
-    callback(this._mino.getData());
+    this._callbacku(this._mino.getData());
   }
 
   OnMoveLeft() {
@@ -241,7 +242,7 @@ class MainLogic {
     if (Srs._isIllegalPosition()) {
       this._mino.moveRight();
     }
-    callback(this._mino.getData());
+    this._callbacku(this._mino.getData());
   }
 
   OnMoveRight() {
@@ -249,18 +250,18 @@ class MainLogic {
     if (Srs._isIllegalPosition()) {
       this._mino.moveLeft();
     }
-    callback(this._mino.getData());
+    this._callbacku(this._mino.getData());
   }
 
   OnRotateLeft() {
     if (Srs.rotateLeft(this._backData, this._mino)) {
-      callback(this._mino.getData());
+      this._callbacku(this._mino.getData());
     }
   }
 
   onRotateRight() {
     if (Srs.rotateRight(this._backData, this._mino)) {
-      callback(this._mino.getData());
+      this._callbacku(this._mino.getData());
     }
   }
 
@@ -269,7 +270,7 @@ class MainLogic {
     if (null === this._mino) {
       this._mino = this._nextLogic.next();
     }
-    callback(this._mino.getData());
+    this._callbacku(this._mino.getData());
   }
 }
 
@@ -279,13 +280,13 @@ MainLogic._HEIGHT = 24;
 class NextLogic {
   constructor(callback) {
     this._mino = MinoFactory.create();
-    this._callback = callback;
+    this._callbacki = callback;
   }
   
   next() {
     let mino = this._mino;
     this._mino = MinoFactory.create()
-    this._callback(this._mino.getData());
+    this._callbacki(this._mino.getData());
     return mino;
   }
 }
@@ -350,12 +351,12 @@ class Player {
 
   setNextData(data) {
     this._nextData = data;
-    //this._callback();
+    this._callback();
   }
 }
 class Tetris {
   constructor(callback) {
-    this._callback = callback;
+    this._callbacka = callback;
     this._players = [];
     this._logics = [];
     this._isRunning = false;
@@ -367,10 +368,11 @@ class Tetris {
 
   addPlayer(socketId, name) {
     if (!this._isRunning) {
-      this._players[socketId] = new Player(name, this.emit);
+      this._players[socketId] = new Player(name, this.emit.bind(this));
       this._logics[socketId] = new MainLogic(
-        new HoldLogic(this._players[socketId].setHoldData), new NextLogic(this._players[socketId].setNextData),
-        this._players[socketId].setMainData
+        new HoldLogic(this._players[socketId].setHoldData.bind(this._players[socketId])),
+        new NextLogic(this._players[socketId].setNextData.bind(this._players[socketId])),
+        this._players[socketId].setMainData.bind(this._players[socketId])
       );
     }
     this.emit();
@@ -383,7 +385,7 @@ class Tetris {
   }
 
   emit() {
-    this._callback(Tetris._convert(this._players));
+    this._callbacka(Tetris._convert(this._players));
   }
 
   static _convert(players) {

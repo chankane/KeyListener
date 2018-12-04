@@ -1,6 +1,6 @@
 class Tetris {
   constructor(callback) {
-    this._callback = callback;
+    this._callbacka = callback;
     this._players = [];
     this._logics = [];
     this._isRunning = false;
@@ -12,10 +12,11 @@ class Tetris {
 
   addPlayer(socketId, name) {
     if (!this._isRunning) {
-      this._players[socketId] = new Player(name, this.emit);
+      this._players[socketId] = new Player(name, this.emit.bind(this));
       this._logics[socketId] = new MainLogic(
-        new HoldLogic(this._players[socketId].setHoldData), new NextLogic(this._players[socketId].setNextData),
-        this._players[socketId].setMainData
+        new HoldLogic(this._players[socketId].setHoldData.bind(this._players[socketId])),
+        new NextLogic(this._players[socketId].setNextData.bind(this._players[socketId])),
+        this._players[socketId].setMainData.bind(this._players[socketId])
       );
     }
     this.emit();
@@ -28,7 +29,7 @@ class Tetris {
   }
 
   emit() {
-    this._callback(Tetris._convert(this._players));
+    this._callbacka(Tetris._convert(this._players));
   }
 
   static _convert(players) {

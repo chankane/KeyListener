@@ -18,11 +18,14 @@ class AbstractBoard {
     this._strokeWidth = strokeWidth;
   }
 
-  repaint(colors) {
+  repaint(data) {
     this._clearScreen();
-    for (let j=0; j<colors.length; j++) {
-      for (let i=0; i<colors[j].length; i++) {
-        this._context.fillStyle = colors[j][i];
+    if (!data) {
+      return;
+    }
+    for (let j=0; j<data.length; j++) {
+      for (let i=0; i<data[j].length; i++) {
+        this._context.fillStyle = data[j][i];
         this._context.fillRect(
           this._blockSize * (i + this._offsetX) + this._strokeWidth,
           this._blockSize * (j + this._offsetY) + this._strokeWidth,
