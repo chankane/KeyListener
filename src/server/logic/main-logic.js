@@ -15,7 +15,7 @@ class MainLogic {
     this._mino = nextLogic.next();
     this._droppingIntervalId = 0;
     //this._offsetX = this._offsetY = 0;
-    this._callbacku(this._mino.getData());
+    this._callbacku(this._merge());
   }
 
   start() {
@@ -45,37 +45,37 @@ class MainLogic {
   }
 
   /* Many logic...*/
-  OnHardDrop() {
+  onHardDrop() {
     //?
     this._callbacku(this._merge());
   }
 
-  OnSoftDrop() {
+  onSoftDrop() {
     this._mino.moveDown();
-    if (Srs._isIllegalPosition()) {
+    if (Srs.isIllegalPosition(this._backData, this._mino)) {
       this._mino.moveUp();
       this._holdLogic.next();
     }
     this._callbacku(this._merge());
   }
 
-  OnMoveLeft() {
+  onMoveLeft() {
     this._mino.moveLeft();
-    if (Srs._isIllegalPosition()) {
+    if (Srs.isIllegalPosition(this._backData, this._mino)) {
       this._mino.moveRight();
     }
     this._callbacku(this._merge());
   }
 
-  OnMoveRight() {
+  onMoveRight() {
     this._mino.moveRight();
-    if (Srs._isIllegalPosition()) {
+    if (Srs.isIllegalPosition(this._backData, this._mino)) {
       this._mino.moveLeft();
     }
     this._callbacku(this._merge());
   }
 
-  OnRotateLeft() {
+  onRotateLeft() {
     if (Srs.rotateLeft(this._backData, this._mino)) {
       this._callbacku(this._merge());
     }

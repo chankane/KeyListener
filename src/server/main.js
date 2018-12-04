@@ -6,7 +6,7 @@ let tetris = new Tetris((data) => io.sockets.emit('updated', data));
 
 io.sockets.on('connection', (socket) => {
   tetris.addPlayer(socket.id, socket.handshake.query['name']);
-  //console.log('player: ' + players[socket.id].name);
+  console.log('player: ' + socket.id);
 
   socket.on("disconnect", () => {
     tetris.deletePlayer(socket.id);
@@ -16,13 +16,13 @@ io.sockets.on('connection', (socket) => {
     tetris.start();
   });
 
-  socket.on("moveLeft", () => tetris.onMoveLeft());
-  socket.on("moveRight", () => tetris.onMoveRight());
-  socket.on("softDrop", () => tetris.onSoftDrop());
-  socket.on("hardDrop", () => tetris.onHardDrop());
-  socket.on("rotateLeft", () => tetris.onRotateLeft());
-  socket.on("rotateRight", () => tetris.onRotateRight());
-  socket.on("hold", () => /*attack(socket.id, 1)*/tetris.onHold() );
+  socket.on("moveLeft", () => tetris.onMoveLeft(socket.id));
+  socket.on("moveRight", () => tetris.onMoveRight(socket.id));
+  socket.on("softDrop", () => tetris.onSoftDrop(socket.id));
+  socket.on("hardDrop", () => tetris.onHardDrop(socket.id));
+  socket.on("rotateLeft", () => tetris.onRotateLeft(socket.id));
+  socket.on("rotateRight", () => tetris.onRotateRight(socket.id));
+  socket.on("hold", () => /*attack(socket.id, 1)*/tetris.onHold(socket.id));
 });
 
 function generateSocketIo() {
