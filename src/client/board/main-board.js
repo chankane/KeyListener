@@ -1,6 +1,7 @@
 class MainBoard extends AbstractBoard {
   constructor(canvas) {
     super(canvas, MainBoard.WIDTH, MainBoard.HEIGHT, MainBoard._BLOCK_SIZE);
+    canvas.style.backgroundColor = 'darkseagreen';
     this._setOffset(0, -3.75);
     this._setStrokeWidth(1);
   }

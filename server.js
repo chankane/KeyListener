@@ -207,6 +207,7 @@ class MainLogic {
     this._mino = nextLogic.next();
     this._droppingIntervalId = 0;
     //this._offsetX = this._offsetY = 0;
+    this._callbacku(this._mino.getData());
   }
 
   start() {
@@ -222,10 +223,23 @@ class MainLogic {
     clearInterval(this._droppingIntervalId);
   }
 
+  _merge() {
+    let merged = MainLogic._initBackData();
+    let data = this._mino.getData();
+    for (let j=0; j<data.length; j++) {
+      for (let i=0; i<data[j].length; i++) {
+        if (Color.EMPTY !== data[j][i]) {
+          merged[this._mino._minoOffsetY + j][this._mino._minoOffsetX + i] = data[j][i];
+        }
+      }
+    }
+    return merged;
+  }
+
   /* Many logic...*/
   OnHardDrop() {
     //?
-    this._callbacku(this._mino.getData());
+    this._callbacku(this._merge());
   }
 
   OnSoftDrop() {
@@ -234,7 +248,7 @@ class MainLogic {
       this._mino.moveUp();
       this._holdLogic.next();
     }
-    this._callbacku(this._mino.getData());
+    this._callbacku(this._merge());
   }
 
   OnMoveLeft() {
@@ -242,7 +256,7 @@ class MainLogic {
     if (Srs._isIllegalPosition()) {
       this._mino.moveRight();
     }
-    this._callbacku(this._mino.getData());
+    this._callbacku(this._merge());
   }
 
   OnMoveRight() {
@@ -250,18 +264,18 @@ class MainLogic {
     if (Srs._isIllegalPosition()) {
       this._mino.moveLeft();
     }
-    this._callbacku(this._mino.getData());
+    this._callbacku(this._merge());
   }
 
   OnRotateLeft() {
     if (Srs.rotateLeft(this._backData, this._mino)) {
-      this._callbacku(this._mino.getData());
+      this._callbacku(this._merge());
     }
   }
 
   onRotateRight() {
     if (Srs.rotateRight(this._backData, this._mino)) {
-      this._callbacku(this._mino.getData());
+      this._callbacku(this._merge());
     }
   }
 
@@ -270,7 +284,7 @@ class MainLogic {
     if (null === this._mino) {
       this._mino = this._nextLogic.next();
     }
-    this._callbacku(this._mino.getData());
+    this._callbacku(this._merge());
   }
 }
 

@@ -78,7 +78,8 @@ Input._ROTATE_RIGHT = 'x';
 Input._HOLD = ' ';
 class AbstractBoard {
   constructor(canvas, blockNumX, blockNumY, blockSize) {
-    canvas.style.backgroundColor = 'gray';
+    //canvas.style.backgroundColor = Color.EMPTY;
+    canvas.style.backgroundColor = 'lightgray';
     canvas.width = this._canvasWidth = blockNumX * blockSize;
     canvas.height = this._canvasHeight = blockNumY * blockSize;
     this._context = canvas.getContext('2d');
@@ -121,6 +122,7 @@ class AbstractBoard {
 class MainBoard extends AbstractBoard {
   constructor(canvas) {
     super(canvas, MainBoard.WIDTH, MainBoard.HEIGHT, MainBoard._BLOCK_SIZE);
+    canvas.style.backgroundColor = 'darkseagreen';
     this._setOffset(0, -3.75);
     this._setStrokeWidth(1);
   }

@@ -1,6 +1,7 @@
 class AbstractBoard {
   constructor(canvas, blockNumX, blockNumY, blockSize) {
-    canvas.style.backgroundColor = 'gray';
+    //canvas.style.backgroundColor = Color.EMPTY;
+    canvas.style.backgroundColor = 'lightgray';
     canvas.width = this._canvasWidth = blockNumX * blockSize;
     canvas.height = this._canvasHeight = blockNumY * blockSize;
     this._context = canvas.getContext('2d');
