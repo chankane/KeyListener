@@ -7,6 +7,10 @@ class Tetris {
   }
 
   start() {
+    for (let key in this._logics) {
+      console.log('id: ' + key);
+      this._logics[key].start();
+    }
     this._isRunning = true;
   }
 

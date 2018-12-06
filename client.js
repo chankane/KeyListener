@@ -190,18 +190,10 @@ function clear() {
 }
 
 function repaint(players) {
-	/*let arr = new Array(4);
-	arr[0] = new Array(4);
-	arr[1] = new Array(4);
-	arr[2] = new Array(4);
-	arr[3] = new Array(4);*/
 	// Be careful. (i+1) is 01, 02, 03 or 04...
 	for (let i in players) {
 		document.getElementById("name" + (+i + 1)).innerText = players[i].name;
 		document.getElementById("damage" + (+i + 1)).innerText = players[i].damage;
-		// holdBoardList[i].repaint(arr);
-		// mainBoardList[i].repaint(arr);
-		// nextBoardList[i].repaint(arr);
 		holdBoardList[i].repaint(players[i].holdData);
 		mainBoardList[i].repaint(players[i].mainData);
 		nextBoardList[i].repaint(players[i].nextData);

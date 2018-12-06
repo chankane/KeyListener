@@ -21,7 +21,7 @@ class MainLogic {
   start() {
     this._droppingIntervalId = setInterval(
       () => {
-        this.OnSoftDrop();
+        this.onSoftDrop();
       },
       MainLogic._DROPPING_INTERVAL_MSEC
     );
@@ -61,7 +61,9 @@ class MainLogic {
     this._minoOffsetY++;
     if (this._isIllegalPosition()) {
       this._minoOffsetY--;
-      this._holdLogic.next();
+      this._data = this._merge();
+      this._mino = this._nextLogic.next();
+      this._minoOffsetX = this._minoOffsetY = 0;
     }
     this._callbacku(this._merge());
   }
@@ -83,15 +85,19 @@ class MainLogic {
   }
 
   onRotateLeft() {
-    if (this._rotateLeft(this._data, this._mino)) {
-      this._callbacku(this._merge());
+    this._mino.rotateLeft();
+    if (this._isIllegalPosition()) {
+      this._mino.rotateRight();
     }
+    this._callbacku(this._merge());
   }
 
   onRotateRight() {
-    if (this._rotateRight(this._data, this._mino)) {
-      this._callbacku(this._merge());
+    this._mino.rotateRight();
+    if (this._isIllegalPosition()) {
+      this._mino.rotateLeft();
     }
+    this._callbacku(this._merge());
   }
 
   onHold() {
