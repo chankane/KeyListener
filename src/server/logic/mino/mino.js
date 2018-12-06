@@ -13,29 +13,22 @@ class Mino {
     };
     return data;
   }
+  
   constructor(pattern, color) {
     this._data = Mino._initData(pattern, color);
-    this._minoOffsetX = this._minoOffsetY = 0;
+    this._rotationNum = 0;
   }
 
   getData() {
     return this._data;
   }
 
-  moveLeft() {
-    this._minoOffsetX--;
+  getRotationNum() {
+    return this._rotationNum;
   }
 
-  moveRight() {
-    this._minoOffsetX++;
-  }
-
-  moveDown() {
-    this._minoOffsetY++;
-  }
-
-  moveUp() {
-    this._minoOffsetY--;
+  resetRotation() {
+    this._rotationNum = 0;
   }
 
   rotateR() {
@@ -67,4 +60,20 @@ class Mino {
       }
     }
   }
+
+  // moveLeft() {
+  //   this._minoOffsetX--;
+  // }
+
+  // moveRight() {
+  //   this._minoOffsetX++;
+  // }
+
+  // moveDown() {
+  //   this._minoOffsetY++;
+  // }
+
+  // moveUp() {
+  //   this._minoOffsetY--;
+  // }
 }

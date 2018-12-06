@@ -1,5 +1,5 @@
 class MainLogic {
-  static _initBackData() {
+  static _initData() {
     let data = new Array(MainLogic._HEIGHT);
     for (let j = 0; j < MainLogic._HEIGHT; j++) {
       data[j] = new Array(MainLogic._WIDTH).fill(Color.EMPTY);
@@ -11,10 +11,10 @@ class MainLogic {
     this._holdLogic = holdLogic;
     this._nextLogic = nextLogic;
     this._callbacku = callback;
-    this._backData = MainLogic._initBackData();
+    this._data = MainLogic._initData();
     this._mino = nextLogic.next();
     this._droppingIntervalId = 0;
-    //this._offsetX = this._offsetY = 0;
+    this._minoOffsetX = this._minoOffsetY = 0;
     this._callbacku(this._merge());
   }
 
@@ -32,12 +32,18 @@ class MainLogic {
   }
 
   _merge() {
-    let merged = MainLogic._initBackData();
+    let merged = MainLogic._initData();
+    for (let j=0; j<merged.length; j++) {
+      for (let i=0; i<merged[j].length; i++) {
+        merged[j][i] = this._data[j][i];
+      }
+    }
+
     let data = this._mino.getData();
     for (let j=0; j<data.length; j++) {
       for (let i=0; i<data[j].length; i++) {
         if (Color.EMPTY !== data[j][i]) {
-          merged[this._mino._minoOffsetY + j][this._mino._minoOffsetX + i] = data[j][i];
+          merged[this._minoOffsetY + j][this._minoOffsetX + i] = data[j][i];
         }
       }
     }
@@ -51,38 +57,39 @@ class MainLogic {
   }
 
   onSoftDrop() {
-    this._mino.moveDown();
-    if (Srs.isIllegalPosition(this._backData, this._mino)) {
-      this._mino.moveUp();
+    //this._mino.moveDown();
+    this._minoOffsetY++;
+    if (this._isIllegalPosition()) {
+      this._minoOffsetY--;
       this._holdLogic.next();
     }
     this._callbacku(this._merge());
   }
 
   onMoveLeft() {
-    this._mino.moveLeft();
-    if (Srs.isIllegalPosition(this._backData, this._mino)) {
-      this._mino.moveRight();
+    this._minoOffsetX--;
+    if (this._isIllegalPosition()) {
+      this._minoOffsetX++;
     }
     this._callbacku(this._merge());
   }
 
   onMoveRight() {
-    this._mino.moveRight();
-    if (Srs.isIllegalPosition(this._backData, this._mino)) {
-      this._mino.moveLeft();
+    this._minoOffsetX++;
+    if (this._isIllegalPosition()) {
+      this._minoOffsetX--;
     }
     this._callbacku(this._merge());
   }
 
   onRotateLeft() {
-    if (Srs.rotateLeft(this._backData, this._mino)) {
+    if (this._rotateLeft(this._data, this._mino)) {
       this._callbacku(this._merge());
     }
   }
 
   onRotateRight() {
-    if (Srs.rotateRight(this._backData, this._mino)) {
+    if (this._rotateRight(this._data, this._mino)) {
       this._callbacku(this._merge());
     }
   }
@@ -93,6 +100,28 @@ class MainLogic {
       this._mino = this._nextLogic.next();
     }
     this._callbacku(this._merge());
+  }
+
+  _isIllegalPosition() {
+    let data = this._mino.getData();
+    for (let j=0; j<data.length; j++) {
+      for (let i=0; i<data[j].length; i++) {
+        if (
+          data[j][i] !== Color.EMPTY
+          && (
+            this._isOutOfRange(this._minoOffsetX + i, this._minoOffsetY + j)
+            || this._data[this._minoOffsetY + j][this._minoOffsetX + i] !== Color.EMPTY
+          )
+        ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  _isOutOfRange(indexX, indexY) {
+    return indexX < 0 || indexX >= MainLogic._WIDTH || indexY < 0 || indexY >= MainLogic._HEIGHT;
   }
 }
 
