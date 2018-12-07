@@ -15,6 +15,7 @@ class MainLogic {
     this._mino = nextLogic.next();
     this._droppingIntervalId = 0;
     this._minoOffsetX = this._minoOffsetY = 0;
+    this._isGameOver = false;
     this._callbacku(this._merge());
   }
 
@@ -25,7 +26,7 @@ class MainLogic {
       },
       MainLogic._DROPPING_INTERVAL_MSEC
     );
-  }
+   }
 
   _stop(){
     clearInterval(this._droppingIntervalId);
@@ -62,8 +63,14 @@ class MainLogic {
     if (this._isIllegalPosition()) {
       this._minoOffsetY--;
       this._data = this._merge();
-      this._mino = this._nextLogic.next();
-      this._minoOffsetX = this._minoOffsetY = 0;
+      if (!this._isGameOver) {
+        this._mino = this._nextLogic.next();
+        this._minoOffsetX = this._minoOffsetY = 0;
+      }
+      if (!this._isGameOver && this._isIllegalPosition()) {
+        this._lose();
+        this._isGameOver = true;
+      }
     }
     this._callbacku(this._merge());
   }
@@ -106,6 +113,26 @@ class MainLogic {
       this._mino = this._nextLogic.next();
     }
     this._callbacku(this._merge());
+  }
+
+  _lose() {
+    this._stop();
+    this._toStone();
+  }
+
+  _toStone() {
+    console.log('stone');
+    let row = MainLogic._HEIGHT - 1;
+    let id = setInterval(() => {
+      console.log('row: ' + row);
+      for (let i=0; i<MainLogic._WIDTH; i++) {
+        this._data[row][i] = 'white';
+      }
+      this._callbacku(this._data);
+      if (row-- < 1){
+        clearInterval(id);
+      }
+    }, 100);
   }
 
   _isIllegalPosition() {

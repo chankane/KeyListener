@@ -45,31 +45,45 @@ class Tetris {
   }
 
   onMoveLeft(socketId) {
-    this._logics[socketId].onMoveLeft();
+    if (this._isRunning) {
+      this._logics[socketId].onMoveLeft();
+    }
   }
 
   onMoveRight(socketId) {
-    this._logics[socketId].onMoveRight();
+    if (this._isRunning) {
+      this._logics[socketId].onMoveRight();
+    }
   }
 
   onSoftDrop(socketId) {
-    this._logics[socketId].onSoftDrop();
+    if (this._isRunning) {
+      this._logics[socketId].onSoftDrop();
+    }
   }
 
   onHardDrop(socketId) {
-    this._logics[socketId].onHardDrop();
+    if (this._isRunning) {
+      this._logics[socketId].onHardDrop();
+    }
   }
 
   onRotateLeft(socketId) {
-    this._logics[socketId].onRotateLeft();
+    if (this._isRunning) {
+      this._logics[socketId].onRotateLeft();
+    }
   }
 
   onRotateRight(socketId) {
-    this._logics[socketId].onRotateRight();
+    if (this._isRunning) {
+      this._logics[socketId].onRotateRight();
+    }
   }
 
   onHold(socketId) {
-    this._logics[socketId].onHold();
+    if (this._isRunning) {
+      this._logics[socketId].onHold();
+    }
   }
 
   onUpdated() {}
