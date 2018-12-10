@@ -1,4 +1,4 @@
-class MainLogic {
+class MainLogic extends InputAdapter {
   static _initData() {
     let data = new Array(MainLogic._HEIGHT);
     for (let j = 0; j < MainLogic._HEIGHT; j++) {
@@ -8,21 +8,22 @@ class MainLogic {
   }
 
   constructor(holdLogic, nextLogic, callback) {
+    super();
     this._holdLogic = holdLogic;
     this._nextLogic = nextLogic;
-    this._callbacku = callback;
+    this._callback = callback;
     this._data = MainLogic._initData();
     this._mino = nextLogic.next();
     this._droppingIntervalId = 0;
     this._minoOffsetX = this._minoOffsetY = 0;
     this._isGameOver = false;
-    this._callbacku(this._merge());
+    this._callback(this._merge());
   }
 
   start() {
     this._droppingIntervalId = setInterval(
       () => {
-        this.onSoftDrop();
+        this.onMoveDownKeyPressed();
       },
       MainLogic._DROPPING_INTERVAL_MSEC
     );
@@ -52,12 +53,12 @@ class MainLogic {
   }
 
   /* Many logic...*/
-  onHardDrop() {
+  onHardDropKeyPressed() {
     //?
-    this._callbacku(this._merge());
+    this._callback(this._merge());
   }
 
-  onSoftDrop() {
+  onMoveDownKeyPressed() {
     //this._mino.moveDown();
     this._minoOffsetY++;
     if (this._isIllegalPosition()) {
@@ -72,47 +73,47 @@ class MainLogic {
         this._isGameOver = true;
       }
     }
-    this._callbacku(this._merge());
+    this._callback(this._merge());
   }
 
-  onMoveLeft() {
+  onMoveLeftKeyPressed() {
     this._minoOffsetX--;
     if (this._isIllegalPosition()) {
       this._minoOffsetX++;
     }
-    this._callbacku(this._merge());
+    this._callback(this._merge());
   }
 
-  onMoveRight() {
+  onMoveRightKeyPressed() {
     this._minoOffsetX++;
     if (this._isIllegalPosition()) {
       this._minoOffsetX--;
     }
-    this._callbacku(this._merge());
+    this._callback(this._merge());
   }
 
-  onRotateLeft() {
+  onRotateLeftKeyPressed() {
     this._mino.rotateLeft();
     if (this._isIllegalPosition()) {
       this._mino.rotateRight();
     }
-    this._callbacku(this._merge());
+    this._callback(this._merge());
   }
 
-  onRotateRight() {
+  onRotateRightKeyPressed() {
     this._mino.rotateRight();
     if (this._isIllegalPosition()) {
       this._mino.rotateLeft();
     }
-    this._callbacku(this._merge());
+    this._callback(this._merge());
   }
 
-  onHold() {
+  onHoldKeyPressed() {
     this._mino = this._holdLogic.hold(this._mino);
     if (null === this._mino) {
       this._mino = this._nextLogic.next();
     }
-    this._callbacku(this._merge());
+    this._callback(this._merge());
   }
 
   _lose() {
@@ -128,7 +129,7 @@ class MainLogic {
       for (let i=0; i<MainLogic._WIDTH; i++) {
         this._data[row][i] = 'white';
       }
-      this._callbacku(this._data);
+      this._callback(this._data);
       if (row-- < 1){
         clearInterval(id);
       }

@@ -1,6 +1,6 @@
 class Tetris {
-  constructor(callback) {
-    this._callbacka = callback;
+  constructor(callback, onFinished) {
+    this._callback = callback;
     this._players = [];
     this._logics = [];
     this._isRunning = false;
@@ -33,7 +33,7 @@ class Tetris {
   }
 
   emit() {
-    this._callbacka(Tetris._convert(this._players));
+    this._callback(Tetris._convert(this._players));
   }
 
   static _convert(players) {

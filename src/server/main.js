@@ -16,13 +16,13 @@ io.sockets.on('connection', (socket) => {
     tetris.start();
   });
 
-  socket.on("moveLeft", () => tetris.onMoveLeft(socket.id));
-  socket.on("moveRight", () => tetris.onMoveRight(socket.id));
-  socket.on("softDrop", () => tetris.onSoftDrop(socket.id));
-  socket.on("hardDrop", () => tetris.onHardDrop(socket.id));
-  socket.on("rotateLeft", () => tetris.onRotateLeft(socket.id));
-  socket.on("rotateRight", () => tetris.onRotateRight(socket.id));
-  socket.on("hold", () => /*attack(socket.id, 1)*/tetris.onHold(socket.id));
+  socket.on("moveLeft", () => tetris.onMoveLeftKeyPressed(socket.id));
+  socket.on("moveRight", () => tetris.onMoveRightKeyPressed(socket.id));
+  socket.on("softDrop", () => tetris.onMoveDownKeyPressed(socket.id));
+  socket.on("hardDrop", () => tetris.onHardDropKeyPressed(socket.id));
+  socket.on("rotateLeft", () => tetris.onRotateLeftKeyPressed(socket.id));
+  socket.on("rotateRight", () => tetris.onRotateRightKeyPressed(socket.id));
+  socket.on("hold", () => /*attack(socket.id, 1)*/tetris.onHoldKeyPressed(socket.id));
 });
 
 function generateSocketIo() {
